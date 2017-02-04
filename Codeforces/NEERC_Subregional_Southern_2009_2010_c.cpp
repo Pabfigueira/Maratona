@@ -3,7 +3,7 @@
 using namespace std;
 
 #define sc(a) scanf("%d", &a)
-#define sc2(a, b) scanf("%d%d", &a, &b)
+#define sc2(a, b) scanf("%ld%ld", &a, &b)
 #define sc3(a, b, c) scanf("%d%d%d", &a, &b, &c)
 #define scs(a) scanf("%s", a)
 #define pri(x) printf("%d\n", x)
@@ -28,39 +28,36 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 const ld pi = acos(-1);
 const int MOD = 1e9 + 7;
 
-vector<string> vetor;
+int n;
+long long totalCost;
+vector< pair<long int, pair<long int, pair<int, pair<long int, long int> > > > > edges; 
+list< pair<long int, pair<long int, pair<int, pair<long int, long int> > > > > inside;
+list< pair<long int, pair<long int, pair<int, pair<long int, long int> > > > > outside;
+list< pair<long int, pair<long int, pair<int, pair<long int, long int> > > > >:: iterator it; 
 
-void dfs( int e, int d, int k, bool aberta ) {
-    if( e > d ) return;
-    
-    int last;
-    char c;
-    
-    c = vetor[e][k];
-    last = e;
+map<long int, long int> pai; 
 
-    if( vetor[e][k] == '*' || vetor[e][k] == '#' ) {
-        while( last<=d && (vetor[last].size()>k+1 && vetor[last][k]==c )) {
-            last++;
-        } 
-        last--;
-    }
-    
-    if( last == e ) {
-        if( aberta ) cout << "<li>\n";
-        for(int i=k; i<vetor[e].size(); i++ ) cout << vetor[e][i];
-        cout << endl; 
-        if( aberta ) cout << "</li>\n";
-        dfs(e+1,d,k,aberta); 
-    } else {
-        if( aberta ) cout << "<li>\n";
-        if( c=='*' ) cout << "<ul>\n";
-        if( c=='#' ) cout << "<ol>\n";
-        dfs(e,last,k+1,true);
-        if( c=='#' ) cout << "</ol>\n";
-        if( c=='*' ) cout << "</ul>\n"; 
-        if( aberta ) cout << "</li>\n";    
-        dfs(last+1,d,k,aberta);
+long int Find( long int a ) { return pai[a] == a ? a : pai[a] = Find( pai[a] ); }
+
+void Union( long int a, int b ) { pai[Find(a)] = Find(b); } 
+
+
+void kruskal() {
+    int i;
+
+    for( i=0; i<n; i++ ) {
+        if( Find( edges[i].second.second.second.first ) != 
+            Find( edges[i].second.second.second.second ) ) {
+            
+            totalCost -= edges[i].second.first;
+
+            edges[i].second.first *= (-1);
+            inside.pb( edges[i] );
+            Union(Find(edges[i].second.second.second.first), Find(edges[i].second.second.second.second));
+        } else {
+            edges[i].second.first *= (-1);
+            outside.pb( edges[i] );
+        }
     }
 }
 
@@ -68,11 +65,40 @@ int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
     
-    string s;
+    int i;
+    long int a, b, c, d;
 
-    while( getline(cin,s) ) {
-        vetor.pb(s);    
-    }     
-    dfs(0,vetor.size()-1,0,false); 
+    totalCost = 0;    
+
+    sc(n);
+    edges.resize(n);
+
+    for( i=0; i<n; i++ ) {
+        sc2(a,b);
+        sc2(c,d);
+        edges[i].first = -c;
+        edges[i].second.first = -d;
+        edges[i].second.second.first = i+1;
+        edges[i].second.second.second.first = a;
+        edges[i].second.second.second.second = b;
+        pai[a] = a;
+        pai[b] = b;
+    }
+    sort(edges.begin(),edges.end());
+    kruskal();
+    printf("%lld\n",totalCost);
+    bool first = true;
+    for( it=outside.begin(); it!=outside.end(); ++it ) {
+        if( first ) first = false;
+        else printf(" ");
+        printf("%d",it->second.second.first);
+    }
+
+    for( it=inside.begin(); it!=inside.end(); ++it ) {
+        if( first ) first = false;
+        else printf(" ");
+        printf("%d",it->second.second.first);
+    }
+    printf("\n");
     return 0;
 }
