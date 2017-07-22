@@ -46,7 +46,7 @@ struct stree {
 
 vector< stree > tree; 
 
-void bfs( int atual ) {
+void dfs( int atual ) {
     tree[atual].Pre = contPre++;
     
     if( atual!=0 ) {
@@ -62,7 +62,7 @@ void bfs( int atual ) {
     for( int i=0; i<tree[atual].sons.size(); i++ ) {
         if( tree[atual].sons[i] != tree[atual].father ) {
             tree[tree[atual].sons[i]].father = atual;
-            bfs( tree[atual].sons[i] ); 
+            dfs( tree[atual].sons[i] ); 
             tree[atual].coinsOdd  ^= tree[tree[atual].sons[i]].coinsOdd;
             tree[atual].coinsEven ^= tree[tree[atual].sons[i]].coinsEven;
         }
@@ -96,7 +96,7 @@ int main() {
     }
     tree[0].father = -1;
     tree[0].grau = 0;
-    bfs(0);
+    dfs(0);
 
     cin >> q;
 
