@@ -1,60 +1,47 @@
-#include <bits/stdc++.h> 
+#include<bits/stdc++.h>
 
 using namespace std;
 
-map<string, set<string> > graph;
-set<string> visited;
-list< pair<string,int> > fila;
+map<string,set<string>> graph;
+set<string> ans;
+set<string>::iterator it;
 
-void busca() {
+void bfs(int g) {
+    pair<string,int> next;
+    queue<pair<string,int>> myQueue;
+    myQueue.push(make_pair("Rerisson",0));
+    ans.insert("Rerisson");
     
-    set<string>::iterator it;
-    string people = fila.front().first;
-    int g = fila.front().second;
+    while(!myQueue.empty()) {
+        next = myQueue.front();
+        myQueue.pop();
+        if(next.second==g) continue;
     
-    fila.pop_front();
-
-    if( people!="Rerisson" ){
-        visited.insert(people);
-    } 
- 
-    if( g==0 ) return;
-
-    for( it=graph[people].begin(); it!=graph[people].end(); ++it ) {
-        if( *it!="Rerisson" && visited.find(*it)==visited.end() ) {
-            fila.push_back( make_pair(*it,g-1) );
-        }        
+        for(it=graph[next.first].begin(); it!=graph[next.first].end(); ++it) {
+            if(ans.find(*it)==ans.end()) {
+                ans.insert(*it);
+                myQueue.push(make_pair(*it,next.second+1));
+            }
+        }
     } 
 }
 
-
 int main() {
-    
-    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
-    
+    ios_base::sync_with_stdio(false);
     int n, g, i;
-
-    string a, b;
-
+    string nodeA, nodeB;
     cin >> n >> g;
-
-    for( i=0; i<n; i++ ) {
-        cin >> a >> b;
-
-        graph[a].insert(b);
-        graph[b].insert(a);
-    }
-
-    fila.push_front( make_pair("Rerisson",g) );
-    
-    while( !fila.empty() ) {
-        busca();
-    }
-    set<string>::iterator it;
-    cout << visited.size() << endl;
-    for( it=visited.begin(); it!=visited.end(); ++it ) {
-        cout << *it << endl;
+    for(i=0; i<n; i++) {
+        cin >> nodeA >> nodeB;
+        graph[nodeA].insert(nodeB);
+        graph[nodeB].insert(nodeA);
     }
     
+    bfs(g); 
+    
+    cout << ans.size()-1 << endl;
+    for(it=ans.begin(); it!=ans.end(); ++it) {
+        if(*it != "Rerisson") cout << *it << endl;
+    } 
     return 0;
 }
