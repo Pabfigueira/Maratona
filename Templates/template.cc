@@ -31,6 +31,6 @@ const ld pi = acos(-1);
 const int MOD = 1e9 + 7;
 
 int main() {
-    BUFF;
-    return 0;
+  BUFF;
+  return 0;
 }
